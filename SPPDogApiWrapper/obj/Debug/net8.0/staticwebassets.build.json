@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "aUqeAvNedgO0GIfd4OhfbehmvBLKhxFznTmkMeFHkuI=",
+  "Source": "SPPDogApiWrapper",
+  "BasePath": "_content/SPPDogApiWrapper",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
