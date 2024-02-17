@@ -8,16 +8,15 @@ ServiceCollection services = new();
 
 ServiceProvider serviceProvider = new ServiceCollection()
     .AddLogging((loggingBuilder) => loggingBuilder
-        .SetMinimumLevel(LogLevel.Trace)
+        .SetMinimumLevel(LogLevel.Error)
         .AddConsole()
         ).AddSingleton<IDogClient, DogClient>()
     .BuildServiceProvider();
 
-//var logger = serviceProvider.GetService<ILoggerFactory>().CreateLogger<Program>();
 IDogClient client = serviceProvider.GetService<IDogClient>();
+
 bool tryAgain = true;
 ApiHelper.InitializeClient();
-//DogClient client = new DogClient();
 
 while (tryAgain == true)
 {

@@ -1,6 +1,5 @@
 using DataAccess.Models;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 using System.Net.Http.Json;
 
 namespace SPPConsole;
@@ -27,7 +26,7 @@ public sealed class DogClient : IDogClient
             }
             else
             {
-                _logger.LogError($"Error connecting to {url} STATUS_CODE: {response.StatusCode} REASON PHRASE: {response.ReasonPhrase}");
+                _logger.LogWarning($"Warning, could not connect to {url} STATUS_CODE: {response.StatusCode} REASON PHRASE: {response.ReasonPhrase}");
                 return false;
             }
         }
@@ -44,9 +43,9 @@ public sealed class DogClient : IDogClient
         dogBreed = dogBreed.ToLower();
         if (dogBreed.Contains(' '))
         {
-            //master breed will always be last and sub breed will always be first in input
+            //master breed will always be first and sub breed will always be last in input
             string[] breeds = dogBreed.Split(" ");
-            url = $"{Constants.LOCAL_HOST_NAME}/GetSubBreedListFromApi/{breeds[1]}/{breeds[0]}";
+            url = $"{Constants.LOCAL_HOST_NAME}/GetSubBreedListFromApi/{breeds[0]}/{breeds[1]}";
         }
         else
         {
@@ -111,7 +110,6 @@ public sealed class DogClient : IDogClient
             {
                 _logger.LogError($"Unsucessfully inserted dog image Image = {newDog.Image} and Breed = {newDog.Breed}");
             }
-            //Console.WriteLine(Successfully inserted response.C)
         }
         catch (Exception e)
         {
