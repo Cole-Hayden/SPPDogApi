@@ -9,6 +9,7 @@ public static class Api
     {
         app.MapGet("/GetCachedDogImage/{dogBreed}", GetCachedDogImage);
         app.MapGet("/GetDogImageFromApi/{dogBreed}", GetDogImageFromApi);
+        app.MapGet("/GetSubBreedListFromApi/{masterBreed}/{subBreed}", GetSubBreedListFromApi);
         app.MapPost("/InsertDogBreedAndImageIntoDb", InsertDogBreedAndImageIntoDb);
         ApiHelper.InitializeClient();
     }
@@ -28,6 +29,20 @@ public static class Api
     private static async Task<IResult> GetDogImageFromApi(string dogBreed)
     {
         var url = $"{Constants.DOG_API_URL_START}{dogBreed}{Constants.DOG_API_URL_END}";
+        try
+        {
+            var response = await ApiHelper.ApiClient.GetAsync(url);
+            RandomImageResponse res = await response.Content.ReadFromJsonAsync<RandomImageResponse>();
+            return Results.Ok(res);
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem(ex.Message);
+        }
+    }
+    private static async Task<IResult> GetSubBreedListFromApi(string masterBreed, string subBreed)
+    {
+        var url = $"{Constants.DOG_API_URL_START}{masterBreed}/{subBreed}{Constants.DOG_API_URL_END}";
         try
         {
             var response = await ApiHelper.ApiClient.GetAsync(url);
