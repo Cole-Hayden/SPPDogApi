@@ -16,9 +16,19 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="..\TestApi\TestApi.csproj"/>
+  </ItemGroup>
+
 
   <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
+    <ProjectReference Include="..\Tests\TestApi.csproj" />
     </ItemGroup>
+
+<ItemGroup>
+    <InternalsVisibleTo Include="TestApi" />
+  </ItemGroup>
+
 
 </Project>

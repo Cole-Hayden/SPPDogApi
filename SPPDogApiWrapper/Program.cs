@@ -2,6 +2,7 @@ using DataAccess.DbAccess;
 using SPPDogApiWrapper;
 using DataAccess.Data;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<ISqlDataAccess, SqlDataAccess>();
@@ -13,3 +14,6 @@ app.UseHttpsRedirection();
 app.ConfigureApi();
 
 app.Run();
+
+//Need this to reference when testing in apiIntegrationTest
+public partial class Program { }

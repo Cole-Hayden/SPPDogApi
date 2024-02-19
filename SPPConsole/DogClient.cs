@@ -76,7 +76,6 @@ public sealed class DogClient : IDogClient
         }
         else
         {
-            //Log errors to console
             _logger.LogError($"Error connecting to {url} STATUS_CODE: {response.StatusCode} REASON PHRASE: {response.ReasonPhrase}");
             return null;
         }
