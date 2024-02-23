@@ -18,7 +18,7 @@ public sealed class StartApplication : IStartApplication
             }
             else
             {
-                Console.WriteLine("\nDog was not found in the database or api.\n");
+                Console.WriteLine("Dog was not found in the database or api.\n");
                 Log.Warning($"Warning, could not connect to {url} STATUS_CODE: {response.StatusCode} REASON PHRASE: {response.ReasonPhrase}");
             }
         }
