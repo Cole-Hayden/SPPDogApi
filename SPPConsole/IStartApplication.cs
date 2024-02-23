@@ -3,5 +3,5 @@ namespace SPPConsole;
 
 public interface IStartApplication
 {
-    Task Start(string? dogBreed);
+    Task SelectBreed(string? dogBreed);
 }

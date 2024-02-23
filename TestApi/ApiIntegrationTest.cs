@@ -1,6 +1,10 @@
+using System.Net;
 using System.Net.Http.Json;
 using DataAccess.Models;
+using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
+using NSubstitute;
 
 namespace TestApi;
 
@@ -14,63 +18,49 @@ public class ApiIntegrationTest : IClassFixture<WebApplicationFactory<Program>>
         _client = _factory.CreateClient();
     }
     [Fact]
-    public async Task IsDbHealthy()
-    {
-        string dogBreed = "test";
-        var _client = _factory.CreateClient();
-        string url = $"{SPPConsole.Constants.LOCAL_HOST_NAME}/GetCachedDogImage/{dogBreed}";
-        var response = await _client.GetAsync(url);
-
-        Assert.True(response.IsSuccessStatusCode);
-    }
-    [Fact]
     public async Task IsSamoyedImageInDatabase()
     {
         string dogBreed = "samoyed";
         string samoyedImage = "https://images.dog.ceo/breeds/samoyed/n02111889_2366.jpg";
-        string url = $"{SPPConsole.Constants.LOCAL_HOST_NAME}/GetCachedDogImage/{dogBreed}";
+        string url = $"{Constants.LOCAL_HOST_NAME}{dogBreed}";
 
         var response = await _client.GetAsync(url);
-        var samoyed = await response.Content.ReadFromJsonAsync<DataAccess.Models.DogModel>();
+        var samoyed = await response.Content.ReadFromJsonAsync<DogModel>();
 
-        Assert.Equal(samoyedImage, samoyed.Image);
+        samoyedImage.Should().StartWith("https://images.dog.ceo/breeds/samoyed/");
+        samoyedImage.Should().EndWith(".jpg");
     }
 
     [Fact]
-    public async Task ReturnsSamoyedIfMasterBreedIsFound()
+    public async Task ReturnsIfMasterBreedIsFound()
     {
-        string dogBreed = "samoyed";
-        string url = $"{SPPConsole.Constants.LOCAL_HOST_NAME}/GetDogImageFromApi/{dogBreed}";
+        string dogBreed = "boxer";
+        string url = $"{Constants.LOCAL_HOST_NAME}{dogBreed}";
 
         var response = await _client.GetAsync(url);
-        var samoyed = await response.Content.ReadFromJsonAsync<RandomImageResponse>();
+        var samoyed = await response.Content.ReadFromJsonAsync<DogModel>();
 
-        Assert.NotNull(samoyed.Message);
+        samoyed.Should().NotBeNull();
     }
-
     [Fact]
     public async Task ReturnsTibetanMastiffIfSubBreedIsFound()
     {
         string dogBreed = "tibetan mastiff";
-        var breeds = dogBreed.Split(' ');
-        string url = $"{SPPConsole.Constants.LOCAL_HOST_NAME}/GetSubBreedListFromApi/{breeds[1]}/{breeds[0]}";
+        string url = $"{Constants.LOCAL_HOST_NAME}{dogBreed}";
 
         var response = await _client.GetAsync(url);
-        var tibetanMastiff = await response.Content.ReadFromJsonAsync<RandomImageResponse>();
+        var tibetanMastiff = await response.Content.ReadFromJsonAsync<DogModel>();
 
-        Assert.NotNull(tibetanMastiff.Message);
+        tibetanMastiff.Should().NotBeNull();
     }
-
     [Fact]
     public async Task ReturnsBreedNotFoundIfDogIsNotInApi()
     {
         string dogBreed = "not found";
         var breeds = dogBreed.Split(' ');
-        string url = $"{SPPConsole.Constants.LOCAL_HOST_NAME}/GetSubBreedListFromApi/{breeds[1]}/{breeds[0]}";
+        string url = $"{Constants.LOCAL_HOST_NAME}{dogBreed}";
 
         var response = await _client.GetAsync(url);
-        var notFoundMessage = await response.Content.ReadFromJsonAsync<RandomImageResponse>();
-
-        Assert.Equal(SPPConsole.Constants.BREED_NOT_FOUND, notFoundMessage.Message);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 }

@@ -1,24 +1,31 @@
-using System.Linq.Expressions;
+using System.Net.Http.Json;
 using DataAccess.Models;
+using Serilog;
 using SPPConsole;
 
 public sealed class StartApplication : IStartApplication
 {
-    IDogClient _client;
-    public StartApplication(IDogClient client)
+    public async Task SelectBreed(string? dogBreed)
     {
-        _client = client;
-    }
-    public async Task Start(string? dogBreed)
-    {
-        DogModel newDog = null;
-        if (await _client.IsDogCached(dogBreed) == false)
+        try
         {
-            newDog = await _client.CheckForKindOfBreedAndSelectDog(dogBreed);
-            if (newDog != null)
+            string url = $"{Constants.LOCAL_HOST_NAME}/GetDogImage/{dogBreed}";
+            HttpResponseMessage response = await ApiHelper.ApiClient.GetAsync($"{url}");
+            if (response.IsSuccessStatusCode)
             {
-                await _client.InsertDogImageAndBreed(newDog);
+                DogModel? dog = await response.Content.ReadFromJsonAsync<DogModel>();
+                Console.WriteLine($"\n{dog.Image}\n");
             }
+            else
+            {
+                Console.WriteLine("\nDog was not found in the database or api.\n");
+                Log.Warning($"Warning, could not connect to {url} STATUS_CODE: {response.StatusCode} REASON PHRASE: {response.ReasonPhrase}");
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error($"ERROR SelectBreed DOG BREED = {dogBreed} EXCEPTION = {e.Message}");
+            throw;
         }
     }
 }
